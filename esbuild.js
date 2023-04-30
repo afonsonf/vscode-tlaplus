@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-undef */
 const { build } = require('esbuild');
+const { copy } = require('esbuild-plugin-copy');
 
 //@ts-check
 /** @typedef {import('esbuild').BuildOptions} BuildOptions **/
@@ -27,13 +28,33 @@ const extensionConfig = {
 
 // Config for extension source code (to be run in a Web-based context)
 /** @type BuildOptions */
-const extensionWebConfig = {
+const extensionBrowserConfig = {
     ...baseConfig,
     platform: 'browser',
     format: 'cjs',
     entryPoints: ['./src/main.browser.ts'],
     outfile: './out/main.browser.js',
     external: ['vscode'],
+};
+
+// Config for webview source code (to be run in a web-based context)
+/** @type BuildOptions */
+const webviewConfig = {
+    ...baseConfig,
+    target: 'es2020',
+    format: 'esm',
+    entryPoints: ['./src/webview/check-result-view.ts'],
+    outfile: './out/check-result-view.js',
+    plugins: [
+        // Copy webview css and ttf files to `out` directory unaltered
+        copy({
+            resolveFrom: 'cwd',
+            assets: {
+                from: ['./src/webview/*.css'],
+                to: ['./out'],
+            },
+        })
+    ]
 };
 
 // This watch config adheres to the conventions of the esbuild-problem-matchers
@@ -67,14 +88,19 @@ const watchConfig = {
                 ...watchConfig,
             });
             await build({
-                ...extensionWebConfig,
+                ...extensionBrowserConfig,
+                ...watchConfig,
+            });
+            await build({
+                ...webviewConfig,
                 ...watchConfig,
             });
             console.log('[watch] build finished');
         } else {
             // Build extension
             await build(extensionConfig);
-            await build(extensionWebConfig);
+            await build(extensionBrowserConfig);
+            await build(webviewConfig);
             console.log('build complete');
         }
     } catch (err) {
