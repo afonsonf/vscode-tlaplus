@@ -1,11 +1,28 @@
-.header-section {
+.flow-div {
     display: flex;
+}
+
+.align-items-center {
     align-items: center;
+}
+
+.text-align-right {
+    text-align: right;
+}
+
+.hidden-overflow-ellipsis {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .header-status {
     display: inline-block;
     margin: 0.5em auto 0.5em 0em;
+}
+
+.stats-section {
+    height: 200px;
 }
 
 .text-line {
@@ -42,6 +59,10 @@
 
 .state-E {
     color: var(--vscode-errorForeground);
+}
+
+.coverage-zero {
+    background: var(--vscode-inputValidation-warningBackground);
 }
 
 .hidden {

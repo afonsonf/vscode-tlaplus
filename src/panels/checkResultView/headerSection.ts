@@ -2,7 +2,7 @@ import { ModelCheckResult, SpecFiles } from '../../model/check';
 
 function displayStatusHeader(showFullOutput: boolean, stillRunning: boolean): string {
     return /*html*/ `
-    <div class="header-section">
+    <div class="flow-div align-items-center">
         <h1 class="header-status">Status</h1>
         <div>
             <vscode-button id="act-run-again" appearance="primary" ${stillRunning? 'disabled' : ''}>

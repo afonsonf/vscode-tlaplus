@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { CMD_CHECK_MODEL_RUN_AGAIN, CMD_CHECK_MODEL_STOP, CMD_SHOW_TLC_OUTPUT } from '../commands/checkModel';
 import { ModelCheckResult, ModelCheckResultSource } from '../model/check';
 import { headerSection } from './checkResultView/headerSection';
+import { statsSection } from './checkResultView/statsSection';
 import { getNonce } from './utilities/getNonce';
 import { getUri } from './utilities/getUri';
 
@@ -21,16 +22,16 @@ class CheckResultViewPanel {
     private static readonly viewType = 'modelChecking';
     private static currentPanel: CheckResultViewPanel | undefined;
 
-    private readonly _panel: vscode.WebviewPanel;
-    private readonly _extensionUri: vscode.Uri;
-    private _checkResult: ModelCheckResult;
-    private _disposables: vscode.Disposable[] = [];
+    private readonly panel: vscode.WebviewPanel;
+    private readonly extensionUri: vscode.Uri;
+    private checkResult: ModelCheckResult;
+    private disposables: vscode.Disposable[] = [];
 
     private constructor(extensionUri: vscode.Uri) {
-        this._extensionUri = extensionUri;
-        this._checkResult = ModelCheckResult.createEmpty(ModelCheckResultSource.Process);
+        this.extensionUri = extensionUri;
+        this.checkResult = ModelCheckResult.createEmpty(ModelCheckResultSource.Process);
 
-        this._panel = vscode.window.createWebviewPanel(
+        this.panel = vscode.window.createWebviewPanel(
             CheckResultViewPanel.viewType,
             'TLA+ model checking',
             vscode.ViewColumn.Beside,
@@ -41,18 +42,18 @@ class CheckResultViewPanel {
         );
 
         // Set an event listener to listen for when the panel is disposed
-        this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+        this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
 
         // Set the HTML content for the webview panel
-        this._panel.webview.html = this.getWebviewContent();
+        this.panel.webview.html = this.getWebviewContent();
 
         // Set message listener
-        this._panel.webview.onDidReceiveMessage((message) => this.handleWebviewMessage(message));
+        this.panel.webview.onDidReceiveMessage((message) => this.handleWebviewMessage(message));
     }
 
     public static render(extensionUri: vscode.Uri) {
         if (CheckResultViewPanel.currentPanel) {
-            CheckResultViewPanel.currentPanel._panel.reveal();
+            CheckResultViewPanel.currentPanel.panel.reveal();
         } else {
             CheckResultViewPanel.currentPanel = new CheckResultViewPanel(extensionUri);
         }
@@ -65,51 +66,23 @@ class CheckResultViewPanel {
     }
 
     private updateView(checkResult: ModelCheckResult) {
-        this._checkResult = checkResult;
-        this._panel.webview.html = this.getWebviewContent();
+        this.checkResult = checkResult;
+        this.panel.webview.html = this.getWebviewContent();
     }
 
     private dispose() {
         CheckResultViewPanel.currentPanel = undefined;
 
         // Dispose of the current webview panel
-        this._panel.dispose();
+        this.panel.dispose();
 
         // Dispose of all disposables (i.e. commands) associated with the current webview panel
-        while (this._disposables.length) {
-            const disposable = this._disposables.pop();
+        while (this.disposables.length) {
+            const disposable = this.disposables.pop();
             if (disposable) {
                 disposable.dispose();
             }
         }
-    }
-
-    private getWebviewContent() {
-        const webview = this._panel.webview;
-
-        const webviewUri = getUri(webview, this._extensionUri, ['out', 'check-result-view.js']);
-        const styleUri = getUri(webview, this._extensionUri, ['out', 'check-result-view.css']);
-        const nonce = getNonce();
-
-        // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
-        /* eslint-disable max-len */
-        return /*html*/ `
-        <!DOCTYPE html>
-        <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; font-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
-                <link rel="stylesheet" href="${styleUri}">
-                <title>Model checking</title>
-            </head>
-            <body>
-                ${headerSection(this._checkResult)}
-                <vscode-divider></vscode-divider>
-                <script type="module" nonce="${nonce}" src="${webviewUri}"></script>
-            </body>
-        </html>
-        `;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -127,7 +100,7 @@ class CheckResultViewPanel {
         } else if (message.command === 'showInfoMessage') {
             vscode.window.showInformationMessage(message.text);
         } else if (message.command === 'showVariableValue') {
-            const valStr = this._checkResult ? this._checkResult.formatValue(message.valueId) : undefined;
+            const valStr = this.checkResult ? this.checkResult.formatValue(message.valueId) : undefined;
             if (valStr) {
                 this.createDocument(valStr);
             }
@@ -151,5 +124,35 @@ class CheckResultViewPanel {
         await editor.edit((edit) => edit.insert(zero, text));
         editor.selection = new vscode.Selection(zero, zero);
         editor.revealRange(new vscode.Range(zero, zero), vscode.TextEditorRevealType.AtTop);
+    }
+
+    private getWebviewContent() {
+        const webview = this.panel.webview;
+
+        const webviewUri = getUri(webview, this.extensionUri, ['out', 'check-result-view.js']);
+        const styleUri = getUri(webview, this.extensionUri, ['out', 'check-result-view.css']);
+        const nonce = getNonce();
+
+        // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
+        /* eslint-disable max-len */
+        return /*html*/ `
+        <!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; font-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+                <link rel="stylesheet" href="${styleUri}">
+                <title>Model checking</title>
+            </head>
+            <body>
+                ${headerSection(this.checkResult)}
+                <vscode-divider></vscode-divider>
+                ${statsSection(this.checkResult)}
+                <vscode-divider></vscode-divider>
+                <script type="module" nonce="${nonce}" src="${webviewUri}"></script>
+            </body>
+        </html>
+        `;
     }
 }
