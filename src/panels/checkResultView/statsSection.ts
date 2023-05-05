@@ -1,5 +1,6 @@
 import { Range } from 'vscode';
 import { CoverageItem, InitialStateStatItem, ModelCheckResult } from '../../model/check';
+
 function displayStatesStat(stats: InitialStateStatItem[]) {
     return /*html*/ `
     <vscode-panel-tab id="tab-1">States</vscode-panel-tab>
@@ -95,7 +96,7 @@ function dataGridRowCoverage(stat: CoverageItem): string {
 function createCoverageActionLink(action: string, filepath: string | undefined, range: Range): string {
     return /*html*/ `
     <vscode-link
-        name="coverage-action-link"
+        name="open-file-action-link"
         atr-filepath="${filepath}"
         atr-location-line="${range.start.line}"
         atr-location-character="${range.start.character}"

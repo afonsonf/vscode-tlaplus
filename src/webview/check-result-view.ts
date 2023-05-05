@@ -44,16 +44,30 @@ function main() {
     const stopProcessLink = document.getElementById('cmd-stop') as Link;
     stopProcessLink.onclick = () => stopProcess();
 
-    loadCoverageLinkActions();
+    loadOpenFileActions();
+    loadRevealErrorTraceActions();
 }
 
-function loadCoverageLinkActions() {
-    const linkActions = document.getElementsByName('coverage-action-link');
-    for (const act of linkActions.values()) {
-        const filepath = String(act.getAttribute('atr-filepath'));
-        const line = Number(act.getAttribute('atr-location-line'));
-        const character = Number(act.getAttribute('atr-location-character'));
-        act.onclick = () => openFile(filepath, {'line': line, 'character': character});
+function loadOpenFileActions() {
+    const linkActions = document.getElementsByName('open-file-action-link');
+    for (const link of linkActions.values()) {
+        const filepath = String(link.getAttribute('atr-filepath'));
+        const line = Number(link.getAttribute('atr-location-line'));
+        const character = Number(link.getAttribute('atr-location-character'));
+        link.onclick = () => openFile(filepath, {'line': line, 'character': character});
+    }
+}
+
+function loadRevealErrorTraceActions() {
+    const linkActions = document.getElementsByName('reveal-error-trace');
+    for (const link of linkActions.values()) {
+        const errorTraceId = Number(link.getAttribute('atr-error-trace-id'));
+        // const errorTracePanels = document.getElementById('error-trace-panels') as Panels;
+        link.onclick = () => {
+            console.log('tab-' + errorTraceId);
+            // errorTracePanels.activeid = 'tab-' + errorTraceId;
+            // errorTracePanels.scrollIntoView();
+        };
     }
 }
 
