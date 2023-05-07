@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { CMD_CHECK_MODEL_RUN_AGAIN, CMD_CHECK_MODEL_STOP, CMD_SHOW_TLC_OUTPUT } from '../commands/checkModel';
 import { ModelCheckResult, ModelCheckResultSource } from '../model/check';
+import { errorTraceSection } from './checkResultView/errorTraceSection';
 import { headerSection } from './checkResultView/headerSection';
 import { outputSection } from './checkResultView/outputSection';
 import { statsSection } from './checkResultView/statsSection';
@@ -152,6 +153,7 @@ class CheckResultViewPanel {
                 ${statsSection(this.checkResult)}
                 <vscode-divider></vscode-divider>
                 ${outputSection(this.checkResult)}
+                ${errorTraceSection(this.checkResult)}
                 <script type="module" nonce="${nonce}" src="${webviewUri}"></script>
             </body>
         </html>

@@ -10,6 +10,10 @@
     flex-direction: column;
 }
 
+.margin-left-auto {
+    margin-left: auto;
+}
+
 .margin-0 {
     margin: 0;
 }
@@ -79,4 +83,118 @@
 
 .coverage-zero {
     background: var(--vscode-inputValidation-warningBackground);
+}
+
+.error-trace-item-block {
+    margin-top: 0.5em;
+}
+
+.error-trace-item-title {
+    font-weight: bold;
+    background-color: var(--vscode-editor-lineHighlightBackground);
+    padding-bottom: 0.1em;
+    margin-bottom: 0.1em;
+}
+
+.error-trace-var-value-block:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.var-block {
+    line-height: 1.4em;
+    position: relative;
+    display: flex;
+}
+
+.var-name {
+    display: inline-block;
+    width: 30%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.var-size {
+    display: inline-block;
+    margin-left: 0.3em;
+    opacity: 0.5;
+}
+
+.var-value {
+    display: inline-block;
+    width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.var-menu {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: none;
+}
+
+.var-button {
+    display: inline-block;
+    width: 1.5em;
+    text-align: center;
+    background-size: 1.2em 1.2em;
+    background-repeat: no-repeat;
+    background-color: var(--vscode-editor-background);
+    background-position: 0.3em 0.1em;
+    cursor: pointer;
+}
+
+.var-block:hover .var-menu {
+    display: block;
+}
+
+.change-marker {
+    margin-left: 0.3em;
+}
+
+.change-marker-A {
+    color: var(--vscode-gitDecoration-addedResourceForeground);
+}
+
+.change-marker-M {
+    color: var(--vscode-gitDecoration-modifiedResourceForeground);
+}
+
+.change-marker-D {
+    color: var(--vscode-gitDecoration-deletedResourceForeground);
+}
+
+.value-deleted {
+    opacity: 0.6;
+    text-decoration: line-through;
+}
+
+.tree-nodes {
+    list-style-type: none;
+    padding-inline-start: 1em;
+}
+
+.tree-node::before {
+    content: '';
+    font-size: smaller;
+    display: inline-block;
+    width: 1.3em;
+}
+
+.tree-expandable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.tree-expandable::before {
+    content: "\25B6";
+    opacity: 0.5;
+}
+
+.tree-expandable-down::before {
+    transform: translate(-0.2em, 0.2em) rotate(90deg);
 }

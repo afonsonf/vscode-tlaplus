@@ -1,6 +1,7 @@
 import {
     Button,
     Link,
+    Panels,
     provideVSCodeDesignSystem,
     vsCodeButton,
     vsCodeDataGrid,
@@ -10,7 +11,8 @@ import {
     vsCodeLink,
     vsCodePanels,
     vsCodePanelTab,
-    vsCodePanelView
+    vsCodePanelView,
+    vsCodeTextField
 } from '@vscode/webview-ui-toolkit';
 
 provideVSCodeDesignSystem()
@@ -23,7 +25,8 @@ provideVSCodeDesignSystem()
         vsCodeLink(),
         vsCodePanels(),
         vsCodePanelTab(),
-        vsCodePanelView());
+        vsCodePanelView(),
+        vsCodeTextField());
 
 // Just like a regular webpage we need to wait for the webview
 // DOM to load before we can reference any of the HTML elements
@@ -45,7 +48,12 @@ function main() {
     stopProcessLink.onclick = () => stopProcess();
 
     loadOpenFileActions();
+
     loadRevealErrorTraceActions();
+
+    loadAllModifiedVisibilityToggle();
+
+    loadTreeExpandActions();
 }
 
 function loadOpenFileActions() {
@@ -62,11 +70,50 @@ function loadRevealErrorTraceActions() {
     const linkActions = document.getElementsByName('reveal-error-trace');
     for (const link of linkActions.values()) {
         const errorTraceId = Number(link.getAttribute('atr-error-trace-id'));
-        // const errorTracePanels = document.getElementById('error-trace-panels') as Panels;
+        const errorTracePanels = document.getElementById('error-trace-panels') as Panels;
         link.onclick = () => {
-            console.log('tab-' + errorTraceId);
-            // errorTracePanels.activeid = 'tab-' + errorTraceId;
-            // errorTracePanels.scrollIntoView();
+            errorTracePanels.activeid = 'error-trace-tab-' + errorTraceId;
+        };
+    }
+}
+
+function loadAllModifiedVisibilityToggle() {
+    const links = document.getElementsByName('togle-modified-visibility');
+    links.forEach(element => {
+        loadModifiedVisibilityToggle(element as Link);
+    });
+}
+
+function loadModifiedVisibilityToggle(link: Link) {
+    const traceId = link.getAttribute('atr-trace-id');
+    const variables =
+        Array.from(document.getElementsByName('error-trace-variable'))
+            .filter((v) =>
+                v.getAttribute('atr-change-type') === 'N'
+                && v.getAttribute('atr-index') !== '1'
+                && v.getAttribute('atr-trace-id') === traceId);
+
+    link.onclick = () => {
+        const linkState = link.getAttribute('atr-state');
+        if (linkState === 'show') {
+            link.setAttribute('atr-state', 'hide');
+            link.textContent = 'Show unmodified';
+        } else {
+            link.setAttribute('atr-state', 'show');
+            link.textContent = 'Hide unmodified';
+        }
+
+        variables.forEach((v) => v.classList.toggle('hidden'));
+    };
+}
+
+function loadTreeExpandActions() {
+    const expNodes = document.getElementsByClassName('tree-expandable');
+    for (const node of expNodes) {
+        (node as HTMLElement).onclick = (e) => {
+            const elName = e.target as HTMLElement;
+            elName?.parentElement?.parentElement?.querySelector('.tree-nodes')?.classList.toggle('hidden');
+            elName?.classList.toggle('tree-expandable-down');
         };
     }
 }
