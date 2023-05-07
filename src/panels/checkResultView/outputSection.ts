@@ -7,8 +7,8 @@ function displayOutputLines(checkResult: ModelCheckResult) {
     }
 
     return /*html*/ `
-    <vscode-panel-tab id="tab-1">Output</vscode-panel-tab>
-    <vscode-panel-view id="view-1" class="flex-direction-column">
+    <vscode-panel-tab id="output-tab-1">Output</vscode-panel-tab>
+    <vscode-panel-view id="output-view-1" class="flex-direction-column">
         ${checkResult.outputLines.map(displayOutputLine).join('\n')}
     </vscode-panel-view>
     `;
@@ -35,8 +35,8 @@ function displayWarnings(checkResult: ModelCheckResult) {
     }
 
     return /*html*/ `
-    <vscode-panel-tab id="tab-2">Warnings</vscode-panel-tab>
-    <vscode-panel-view id="view-2" class="flex-direction-column">
+    <vscode-panel-tab id="output-tab-2">Warnings</vscode-panel-tab>
+    <vscode-panel-view id="output-view-2" class="flex-direction-column">
         ${checkResult.warnings.map((warning: WarningInfo) => {
         return /*html*/ `
             <p class="margin-0">
@@ -53,14 +53,14 @@ function displayErrors(checkResult: ModelCheckResult) {
     }
 
     return /*html*/ `
-    <vscode-panel-tab id="tab-3">Errors</vscode-panel-tab>
-    <vscode-panel-view id="view-3" class="flex-direction-column">
+    <vscode-panel-tab id="output-tab-3">Errors</vscode-panel-tab>
+    <vscode-panel-view id="output-view-3" class="flex-direction-column">
         ${checkResult.errors.map((error: ErrorInfo, index: number) => {
         return /*html*/ `
-            <p class="margin-0">
+            <div class="margin-0">
                 ${error.lines.map(displayMessageLine).join('\n')}
                 ${displayErrorLink(error, index)}
-            </p>
+            </div>
             `;}).join('\n')}
     </vscode-panel-view>
     `;
@@ -75,7 +75,7 @@ function displayErrorLink(error: ErrorInfo, index: number) {
     <vscode-link
         name="reveal-error-trace"
         atr-error-trace-id="${index}"
-        href="#">
+        href="#error-trace-panels">
         Show error trace
     </vscode-link>
     `;
@@ -105,8 +105,7 @@ function createMessageLink(line: string, filepath: string | undefined, position:
         name="open-file-action-link"
         atr-filepath="${filepath}"
         atr-location-line="${position?.line}"
-        atr-location-character="${position?.character}"
-        href="#">
+        atr-location-character="${position?.character}">
         ${line}
     </vscode-link>
     `;
@@ -133,12 +132,11 @@ export function outputSection(checkResult: ModelCheckResult): string {
     /* eslint-disable max-len */
     return /*html*/ `
     <section>
-        <vscode-panels class="output-section">
+        <vscode-panels>
             ${displayOutputLines(checkResult)}
             ${displayWarnings(checkResult)}
             ${displayErrors(checkResult)}
         </vscode-panels>
-        <div class="text-line"></div>
         <vscode-divider></vscode-divider>
     </section>
     `;

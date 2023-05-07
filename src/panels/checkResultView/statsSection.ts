@@ -3,8 +3,8 @@ import { CoverageItem, InitialStateStatItem, ModelCheckResult } from '../../mode
 
 function displayStatesStat(stats: InitialStateStatItem[]) {
     return /*html*/ `
-    <vscode-panel-tab id="tab-1">States</vscode-panel-tab>
-    <vscode-panel-view id="view-1">
+    <vscode-panel-tab id="stats-tab-1">States</vscode-panel-tab>
+    <vscode-panel-view id="stats-view-1" class="max-width-fit-content">
         <vscode-data-grid aria-label="States statistics">
             ${dataGridHeaderStates()}
             ${stats.map(dataGridRowStates).join('\n')}
@@ -45,8 +45,8 @@ function displayCoverageStat(stats: CoverageItem[]) {
     }
 
     return /*html*/ `
-    <vscode-panel-tab id="tab-2">Coverage</vscode-panel-tab>
-    <vscode-panel-view id="view-2">
+    <vscode-panel-tab id="stats-tab-2">Coverage</vscode-panel-tab>
+    <vscode-panel-view id="stats-view-2" class="max-width-fit-content">
         <vscode-data-grid aria-label="Coverage statistics">
             ${dataGridHeaderCoverage()}
             ${stats.map(dataGridRowCoverage).join('\n')}
@@ -99,8 +99,7 @@ function createCoverageActionLink(action: string, filepath: string | undefined, 
         name="open-file-action-link"
         atr-filepath="${filepath}"
         atr-location-line="${range.start.line}"
-        atr-location-character="${range.start.character}"
-        href="#">
+        atr-location-character="${range.start.character}">
         ${action}
     </vscode-link>
     `;
@@ -135,11 +134,10 @@ export function statsSection(checkResult: ModelCheckResult): string {
     /* eslint-disable max-len */
     return /*html*/ `
     <section>
-        <vscode-panels class="stats-section">
+        <vscode-panels>
             ${displayStatesStat(checkResult.initialStatesStat)}
             ${displayCoverageStat(checkResult.coverageStat)}
         </vscode-panels>
-        <div class="text-line"></div>
     </section>
     `;
 }

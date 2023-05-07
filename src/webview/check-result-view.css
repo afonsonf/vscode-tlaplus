@@ -1,4 +1,8 @@
-.flow-div {
+.hidden {
+    display: none;
+}
+
+.display-flex {
     display: flex;
 }
 
@@ -29,12 +33,8 @@
     margin: 0.5em auto 0.5em 0em;
 }
 
-.stats-section {
-    /* height: 200px; */
-}
-
-.output-section {
-    /* height: 200px; */
+.max-width-fit-content {
+    max-width: fit-content;
 }
 
 .opacity-50 {
@@ -79,8 +79,4 @@
 
 .coverage-zero {
     background: var(--vscode-inputValidation-warningBackground);
-}
-
-.hidden {
-    display: none;
 }
