@@ -14,13 +14,12 @@ export const ErrorTraceSection = ({checkResult}: {checkResult: ModelCheckResult}
         return (null);
     }
 
-    const errorTraces = checkResult.errors.map(
-        (errorinfo: ErrorInfo, index: number) => <ErrorTrace key={index} errorinfo={errorinfo} traceId={index}/>);
-
     return (
         <section>
             <VSCodePanels id='error-trace-panels'>
-                {errorTraces}
+                {checkResult.errors.map(
+                    (errorinfo: ErrorInfo, index: number) =>
+                        <ErrorTrace key={index} errorinfo={errorinfo} traceId={index}/>)}
             </VSCodePanels>
         </section>
     );
@@ -76,9 +75,9 @@ const ErrorTrace = ({errorinfo, traceId}: {errorinfo: ErrorInfo, traceId: number
 
 enum TreeNodeState { EXPANDED, COLLAPSED }
 
-const switchState = (state: TreeNodeState): TreeNodeState => {
+function switchState(state: TreeNodeState): TreeNodeState {
     return state === TreeNodeState.EXPANDED? TreeNodeState.COLLAPSED : TreeNodeState.EXPANDED;
-};
+}
 
 function parseFilter(filter: string): string[] {
     if (!filter) {

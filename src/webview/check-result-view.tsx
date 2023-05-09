@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 
 import { ErrorTraceSection } from './checkResultView/errorTraceSection';
 import { HeaderSection } from './checkResultView/headerSection';
+import { StatsSection } from './checkResultView/statsSection';
 import { vscode } from './checkResultView/vscode';
 
 window.addEventListener('message', (event) => {
@@ -18,6 +19,7 @@ function displayCheckResult(newState) {
     root.render(
         <section>
             <HeaderSection checkResult={newState.checkResult}/>
+            <StatsSection checkResult={newState.checkResult}/>
             <ErrorTraceSection checkResult={newState.checkResult}/>
         </section>
     );
