@@ -32,11 +32,6 @@
     overflow: hidden;
 }
 
-.header-status {
-    display: inline-block;
-    margin: 0.5em auto 0.5em 0em;
-}
-
 .max-width-fit-content {
     max-width: fit-content;
 }

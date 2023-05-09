@@ -1,10 +1,6 @@
 import * as vscode from 'vscode';
 import { CMD_CHECK_MODEL_RUN_AGAIN, CMD_CHECK_MODEL_STOP, CMD_SHOW_TLC_OUTPUT } from '../commands/checkModel';
 import { ModelCheckResult, ModelCheckResultSource } from '../model/check';
-import { errorTraceSection } from './checkResultView/errorTraceSection';
-import { headerSection } from './checkResultView/headerSection';
-import { outputSection } from './checkResultView/outputSection';
-import { statsSection } from './checkResultView/statsSection';
 import { getNonce } from './utilities/getNonce';
 import { getUri } from './utilities/getUri';
 
@@ -69,7 +65,9 @@ class CheckResultViewPanel {
 
     private updateView(checkResult: ModelCheckResult) {
         this.checkResult = checkResult;
-        this.panel.webview.html = this.getWebviewContent();
+        this.panel.webview.postMessage({
+            checkResult: checkResult
+        });
     }
 
     private dispose() {
@@ -148,12 +146,7 @@ class CheckResultViewPanel {
                 <title>Model checking</title>
             </head>
             <body>
-                ${headerSection(this.checkResult)}
-                <vscode-divider></vscode-divider>
-                ${statsSection(this.checkResult)}
-                <vscode-divider></vscode-divider>
-                ${outputSection(this.checkResult)}
-                ${errorTraceSection(this.checkResult)}
+                <div id="root"></div>
                 <script type="module" nonce="${nonce}" src="${webviewUri}"></script>
             </body>
         </html>

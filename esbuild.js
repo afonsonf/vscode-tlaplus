@@ -43,7 +43,8 @@ const webviewConfig = {
     ...baseConfig,
     target: 'es2020',
     format: 'esm',
-    entryPoints: ['./src/webview/check-result-view.ts'],
+    tsconfig: 'tsconfig.webview.json',
+    entryPoints: ['./src/webview/check-result-view.tsx'],
     outfile: './out/check-result-view.js',
     plugins: [
         // Copy webview css and ttf files to `out` directory unaltered
