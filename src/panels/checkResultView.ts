@@ -39,6 +39,11 @@ class CheckResultViewPanel {
             }
         );
 
+        this.panel.iconPath = {
+            dark: vscode.Uri.joinPath(extensionUri, 'resources','images','preview-dark.svg'),
+            light: vscode.Uri.joinPath(extensionUri, 'resources','images','preview-light.svg'),
+        };
+
         // Set an event listener to listen for when the panel is disposed
         this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
 

@@ -394,7 +394,7 @@
     "scripts": {
         "vscode:prepublish": "npm run compile -- --production",
         "compile": "node ./esbuild.js",
-        "lint": "eslint --ext .ts,.js src/ tests/ resources/",
+        "lint": "eslint --ext .ts,.js src/ tests/",
         "watch": "npm run compile -- --watch",
         "pretest": "tsc -p ./",
         "test": "node ./out/tests/runTest.js",
