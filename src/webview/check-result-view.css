@@ -1,27 +1,3 @@
-.hidden {
-    display: none;
-}
-
-.display-flex {
-    display: flex;
-}
-
-.flex-direction-column {
-    flex-direction: column;
-}
-
-.margin-left-auto {
-    margin-left: auto;
-}
-
-.margin-0 {
-    margin: 0;
-}
-
-.align-items-center {
-    align-items: center;
-}
-
 .text-align-right {
     text-align: right;
 }
@@ -30,18 +6,6 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-}
-
-.max-width-fit-content {
-    max-width: fit-content;
-}
-
-.opacity-50 {
-    opacity: 0.5;
-}
-
-.text-line {
-    margin-top: 1em;
 }
 
 .state-R {

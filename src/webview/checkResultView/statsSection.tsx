@@ -9,7 +9,7 @@ import {
 } from '@vscode/webview-ui-toolkit/react';
 import * as React from 'react';
 import { CoverageItem, InitialStateStatItem, ModelCheckResult } from '../../model/check';
-import { CodeLink, EmptyLine } from './common';
+import { CodeRangeLink, EmptyLine } from './common';
 
 export const StatsSection = ({checkResult}: {checkResult: ModelCheckResult}) => {
     return (
@@ -83,7 +83,7 @@ const CoverageStats = ({stats}: {stats: CoverageItem[]}) => {
         const tooltip = stat.total !== 0 ? '':
             'This action has never been used to compute successor states';
 
-        const codeLink = <CodeLink line={stat.action} filepath={stat.filePath} range={stat.range} />;
+        const codeLink = <CodeRangeLink line={stat.action} filepath={stat.filePath} range={stat.range} />;
 
         return (
             <VSCodeDataGridRow>

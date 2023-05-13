@@ -7,7 +7,7 @@ import {
 } from '@vscode/webview-ui-toolkit/react';
 import * as React from 'react';
 import { CollectionValue, ErrorInfo, ErrorTraceItem, ModelCheckResult } from '../../model/check';
-import { CodeLink } from './common';
+import { CodeRangeLink } from './common';
 
 export const ErrorTraceSection = ({checkResult}: {checkResult: ModelCheckResult}) => {
     if (!checkResult.errors || checkResult.errors.length === 0) {
@@ -114,7 +114,7 @@ const ErrorTraceElement = ({errorTraceItem, settings}: {errorTraceItem: ErrorTra
                 <span className={classes} onClick={setState}>
                     {errorTraceItem.num}: {errorTraceItem.title}
                 </span>
-                <CodeLink line='>>' filepath={errorTraceItem.filePath} range={errorTraceItem.range} />
+                <CodeRangeLink line='>>' filepath={errorTraceItem.filePath} range={errorTraceItem.range} />
             </div>
         );
     };
