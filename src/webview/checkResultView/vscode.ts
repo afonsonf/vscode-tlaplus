@@ -28,6 +28,20 @@ class VSCodeWrapper {
         });
     }
 
+    public showVariableValue(id: number) {
+        vsCodeApi.postMessage({
+            command: 'showVariableValue',
+            valueId: id
+        });
+    }
+
+    public showInfoMessage(text: string) {
+        vsCodeApi.postMessage({
+            command: 'showInfoMessage',
+            text: text
+        });
+    }
+
     public setState<T extends unknown | undefined>(newState: T): T {
         return vsCodeApi.setState(newState);
     }

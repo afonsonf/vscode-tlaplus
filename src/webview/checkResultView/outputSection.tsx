@@ -93,9 +93,9 @@ const ErrorLink = ({error, index}: {error: ErrorInfo, index: number}) => {
 
 const MessageLineSpan = ({message}: {message: MessageLine}) => (
     <p style={{margin: '0'}}>
-        {message.spans.map(span => (
-            span.type !== 'SL' ? <span>{span.text}</span> :
-                <CodePositionLink line={span.text} filepath={span.filePath} position={span.location} />
+        {message.spans.map((span, index) => (
+            span.type !== 'SL' ? <span key={index}>{span.text}</span> :
+                <CodePositionLink key={index} line={span.text} filepath={span.filePath} position={span.location} />
         ))}
     </p>
 );

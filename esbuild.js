@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-undef */
 const { build } = require('esbuild');
-const { copy } = require('esbuild-plugin-copy');
 
 //@ts-check
 /** @typedef {import('esbuild').BuildOptions} BuildOptions **/
@@ -46,16 +45,9 @@ const webviewConfig = {
     tsconfig: 'tsconfig.webview.json',
     entryPoints: ['./src/webview/check-result-view.tsx'],
     outfile: './out/check-result-view.js',
-    plugins: [
-        // Copy webview css and ttf files to `out` directory unaltered
-        copy({
-            resolveFrom: 'cwd',
-            assets: {
-                from: ['./src/webview/*.css'],
-                to: ['./out'],
-            },
-        })
-    ]
+    loader: {
+        '.ttf': 'copy', // use the file loader to handle .ttf files
+    }
 };
 
 // This watch config adheres to the conventions of the esbuild-problem-matchers

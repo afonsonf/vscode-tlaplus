@@ -8,6 +8,7 @@ import {
 import * as React from 'react';
 import { CollectionValue, ErrorInfo, ErrorTraceItem, ModelCheckResult } from '../../model/check';
 import { CodeRangeLink } from './common';
+import { vscode } from './vscode';
 
 export const ErrorTraceSection = ({checkResult}: {checkResult: ModelCheckResult}) => {
     if (!checkResult.errors || checkResult.errors.length === 0) {
@@ -185,14 +186,31 @@ const ErrorTraceElementVariable = (props: {value: CollectionValue, stateId: numb
             classes += ' tree-expandable ' + treeClass;
         }
 
+        const displayValue = () => vscode.showVariableValue(value.id);
+        const copyToClipboard = () => {
+            navigator.clipboard.writeText(value.str);
+            vscode.showInfoMessage('Value has been copied to clipboard');
+        };
+
         return (
-            <div style={{lineHeight: '1.4em', position: 'relative', display: 'flex'}}>
+            <div className='var-block'>
                 <div className={classes} onClick={setState}>
                     {variableTitleKey}
                     {variableTitleItemSize}
                     {variableTitleChangeType}
                 </div>
-                <div className="var-value">{value.str}</div>
+                <div className='var-value'>{value.str}</div>
+                <div className='var-menu'>
+                    <span
+                        hidden={value.changeType !== 'D'}
+                        title='Dislpay value'
+                        onClick={displayValue}
+                        className='var-button codicon codicon-search'/>
+                    <span
+                        title='Copy value to clipboard'
+                        onClick={copyToClipboard}
+                        className='var-button codicon codicon-copy'/>
+                </div>
             </div>
         );
     };

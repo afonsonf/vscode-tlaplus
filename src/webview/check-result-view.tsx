@@ -1,12 +1,14 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-
 import { ModelCheckResult } from '../model/check';
 import { ErrorTraceSection } from './checkResultView/errorTraceSection';
 import { HeaderSection } from './checkResultView/headerSection';
 import { OutputSection } from './checkResultView/outputSection';
 import { StatsSection } from './checkResultView/statsSection';
 import { vscode } from './checkResultView/vscode';
+
+import '@vscode/codicons/dist/codicon.css';
+import './check-result-view.css';
 
 interface State {
     checkResult: ModelCheckResult
