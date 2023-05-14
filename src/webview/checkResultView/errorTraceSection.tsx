@@ -19,8 +19,7 @@ export const ErrorTraceSection = ({checkResult}: {checkResult: ModelCheckResult}
         <section>
             <VSCodePanels id='error-trace-panels'>
                 {checkResult.errors.map(
-                    (errorinfo: ErrorInfo, index: number) =>
-                        <ErrorTrace key={index} errorinfo={errorinfo} traceId={index}/>)}
+                    (errorinfo, index) => <ErrorTrace key={index} errorinfo={errorinfo} traceId={index}/>)}
             </VSCodePanels>
         </section>
     );
@@ -28,20 +27,31 @@ export const ErrorTraceSection = ({checkResult}: {checkResult: ModelCheckResult}
 
 interface Settings {
     readonly hideModified: boolean;
-    readonly filter: string;
+    readonly filter: string[];
 }
 
 const useSettings = () => {
-    const [hideModified, setHideModified] = React.useState(false);
-    const [filter, setFilter] = React.useState('');
+    function parseFilter(filter: string): string[] {
+        if (!filter) {
+            return [];
+        }
+        return filter.trim().split(/\s|,/g).filter(p => p !== '').map(p => p.toLowerCase());
+    }
 
-    const setSettings = (newHideModified: boolean, newFilter: string) => {
-        setHideModified(newHideModified);
-        setFilter(newFilter);
+    const [hideModified, _setHideModified] = React.useState(false);
+    const [filter, _setFilter] = React.useState(parseFilter(''));
+
+    const setFilter = (newFilter: string) => {
+        _setFilter(parseFilter(newFilter));
     };
 
+    const setHideModified = (newHideModified: boolean) => {
+        _setHideModified(newHideModified);
+    };
+
+
     const settings = {hideModified: hideModified, filter: filter};
-    return {settings, setSettings};
+    return {settings, setHideModified, setFilter};
 };
 
 const ErrorTrace = ({errorinfo, traceId}: {errorinfo: ErrorInfo, traceId: number}) => {
@@ -49,9 +59,9 @@ const ErrorTrace = ({errorinfo, traceId}: {errorinfo: ErrorInfo, traceId: number
         return (null);
     }
 
-    const {settings, setSettings} = useSettings();
-    const swapModifiedVisibility = () => setSettings(!settings.hideModified, settings.filter);
-    const handleFilterChange = (e) => setSettings(settings.hideModified, e.currentTarget.value);
+    const {settings, setHideModified, setFilter} = useSettings();
+    const swapModifiedVisibility = () => setHideModified(!settings.hideModified);
+    const handleFilterChange = (e) => setFilter(e.currentTarget.value);
 
     const errorTraceElements = errorinfo.errorTrace.map(
         (v) => <ErrorTraceElement key={v.num} errorTraceItem={v} settings={settings}/>);
@@ -80,26 +90,6 @@ function switchState(state: TreeNodeState): TreeNodeState {
     return state === TreeNodeState.EXPANDED? TreeNodeState.COLLAPSED : TreeNodeState.EXPANDED;
 }
 
-function parseFilter(filter: string): string[] {
-    if (!filter) {
-        return [];
-    }
-    return filter.trim().split(/\s|,/g).filter(p => p !== '').map(p => p.toLowerCase());
-}
-
-function checkFilter(str: string, filterItems: string[]): boolean {
-    if (filterItems.length === 0) {
-        return true;
-    }
-    const eKey = str.toLowerCase();
-    for (const fi of filterItems) {
-        if (eKey.indexOf(fi) >= 0) {
-            return true;
-        }
-    }
-    return false;
-}
-
 const ErrorTraceElement = ({errorTraceItem, settings}: {errorTraceItem: ErrorTraceItem, settings: Settings}) => {
 
     const [treeNodeState, setTreeNodeState] = React.useState(TreeNodeState.EXPANDED);
@@ -120,11 +110,8 @@ const ErrorTraceElement = ({errorTraceItem, settings}: {errorTraceItem: ErrorTra
         );
     };
 
-    const filterItems = parseFilter(settings.filter);
-
     const errorTraceVariables = (treeNodeState === TreeNodeState.COLLAPSED) ? (null) :
         errorTraceItem.variables.items
-            .filter((v) => checkFilter(v.key as string, filterItems))
             .map(
                 (value) =>
                     <ErrorTraceElementVariable
@@ -153,12 +140,27 @@ const changeHints = {
     D: 'This item has been deleted since the previous state'
 };
 
-const ErrorTraceElementVariable = (props: {value: CollectionValue, stateId: number, settings: Settings}) => {
-    const value = props.value;
-    const stateId = props.stateId;
-    const settings = props.settings;
+function checkFilter(str: string, filterItems: string[]): boolean {
+    if (filterItems.length === 0) {
+        return true;
+    }
+    const eKey = str.toLowerCase();
+    for (const filter of filterItems) {
+        if (eKey.indexOf(filter) >= 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+interface ErrorTraceElementVariableI {value: CollectionValue, stateId: number, settings: Settings}
+const ErrorTraceElementVariable = ({value, stateId, settings}: ErrorTraceElementVariableI) => {
 
     if (stateId !== 1 && settings.hideModified && value.changeType === 'N') {
+        return (null);
+    }
+
+    if (!checkFilter(value.key as string, settings.filter)) {
         return (null);
     }
 

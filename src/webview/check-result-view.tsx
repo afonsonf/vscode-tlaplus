@@ -1,37 +1,35 @@
-import React from 'react';
+import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ModelCheckResult } from '../model/check';
 import { ErrorTraceSection } from './checkResultView/errorTraceSection';
 import { HeaderSection } from './checkResultView/headerSection';
 import { OutputSection } from './checkResultView/outputSection';
 import { StatsSection } from './checkResultView/statsSection';
-import { vscode } from './checkResultView/vscode';
 
 import '@vscode/codicons/dist/codicon.css';
 import './check-result-view.css';
 
-interface State {
-    checkResult: ModelCheckResult
-}
+const receiveState = () => {
+    const [state, setState] = React.useState({checkResult: null});
+    window.addEventListener('message', (event) => setState({checkResult: event.data.checkResult}));
+    return state;
+};
 
-vscode.setState({checkResult: null});
+const CheckResultViewApp = () => {
+    const state = receiveState();
 
-window.addEventListener('message', (event) => {
-    const newState = {
-        checkResult: event.data.checkResult,
-    };
-    displayCheckResult(newState);
-    vscode.setState(newState);
-});
+    if (state.checkResult === null) {
+        return (null);
+    }
+
+    return (
+        <>
+            <HeaderSection checkResult={state.checkResult}/>
+            <StatsSection checkResult={state.checkResult}/>
+            <OutputSection checkResult={state.checkResult}/>
+            <ErrorTraceSection checkResult={state.checkResult}/>
+        </>
+    );
+};
 
 const root = createRoot(document.getElementById('root') as HTMLElement);
-function displayCheckResult(newState: State) {
-    root.render(
-        <section>
-            <HeaderSection checkResult={newState.checkResult}/>
-            <StatsSection checkResult={newState.checkResult}/>
-            <OutputSection checkResult={newState.checkResult}/>
-            <ErrorTraceSection checkResult={newState.checkResult}/>
-        </section>
-    );
-}
+root.render(<StrictMode><CheckResultViewApp/></StrictMode>);
