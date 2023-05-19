@@ -3,27 +3,29 @@ import { CMD_CHECK_MODEL_RUN_AGAIN, CMD_CHECK_MODEL_STOP, CMD_SHOW_TLC_OUTPUT } 
 import { ModelCheckResult, ModelCheckResultSource } from '../model/check';
 import { getNonce } from './utilities/getNonce';
 import { getUri } from './utilities/getUri';
+import { createDocument, revealFile } from './utilities/workspace';
 
 export function updateCheckResultView(checkResult: ModelCheckResult): void {
     CheckResultViewPanel.updateCheckResult(checkResult);
 }
 
 export function revealEmptyCheckResultView(_source: ModelCheckResultSource, extContext: vscode.ExtensionContext): void {
-    CheckResultViewPanel.render(extContext.extensionUri);
+    CheckResultViewPanel.renderEmpty(extContext.extensionUri);
 }
 
 export function revealLastCheckResultView(extContext: vscode.ExtensionContext): void {
-    CheckResultViewPanel.render(extContext.extensionUri);
+    CheckResultViewPanel.renderLastResult(extContext.extensionUri);
 }
 
 class CheckResultViewPanel {
     private static readonly viewType = 'modelChecking';
     private static currentPanel: CheckResultViewPanel | undefined;
+    private static lastCheckResult: ModelCheckResult | undefined;
 
     private readonly panel: vscode.WebviewPanel;
     private readonly extensionUri: vscode.Uri;
+    private readonly disposables: vscode.Disposable[] = [];
     private checkResult: ModelCheckResult;
-    private disposables: vscode.Disposable[] = [];
 
     private constructor(extensionUri: vscode.Uri) {
         this.extensionUri = extensionUri;
@@ -54,17 +56,30 @@ class CheckResultViewPanel {
         this.panel.webview.onDidReceiveMessage((message) => this.handleWebviewMessage(message));
     }
 
-    public static render(extensionUri: vscode.Uri) {
+    public static updateCheckResult(checkResult: ModelCheckResult) {
+        CheckResultViewPanel.lastCheckResult = checkResult;
         if (CheckResultViewPanel.currentPanel) {
-            CheckResultViewPanel.currentPanel.panel.reveal();
-        } else {
-            CheckResultViewPanel.currentPanel = new CheckResultViewPanel(extensionUri);
+            CheckResultViewPanel.currentPanel.updateView(checkResult);
         }
     }
 
-    public static updateCheckResult(checkResult: ModelCheckResult) {
+    public static renderEmpty(extensionUri: vscode.Uri) {
         if (CheckResultViewPanel.currentPanel) {
-            CheckResultViewPanel.currentPanel.updateView(checkResult);
+            CheckResultViewPanel.currentPanel.dispose();
+        }
+
+        CheckResultViewPanel.currentPanel = new CheckResultViewPanel(extensionUri);
+    }
+
+    public static renderLastResult(extensionUri: vscode.Uri) {
+        if (CheckResultViewPanel.currentPanel) {
+            CheckResultViewPanel.currentPanel.panel.reveal();
+            return;
+        }
+
+        CheckResultViewPanel.currentPanel = new CheckResultViewPanel(extensionUri);
+        if (CheckResultViewPanel.lastCheckResult) {
+            CheckResultViewPanel.currentPanel.updateView(CheckResultViewPanel.lastCheckResult);
         }
     }
 
@@ -101,34 +116,15 @@ class CheckResultViewPanel {
         } else if (message.command === 'openFile') {
             // `One` is used here because at the moment, VSCode doesn't provide API
             // for revealing existing document, so we're speculating here to reduce open documents duplication.
-            this.revealFile(message.filePath, vscode.ViewColumn.One, message.location.line, message.location.character);
+            revealFile(message.filePath, vscode.ViewColumn.One, message.location.line, message.location.character);
         } else if (message.command === 'showInfoMessage') {
             vscode.window.showInformationMessage(message.text);
         } else if (message.command === 'showVariableValue') {
             const valStr = this.checkResult ? this.checkResult.formatValue(message.valueId) : undefined;
             if (valStr) {
-                this.createDocument(valStr);
+                createDocument(valStr);
             }
         }
-    }
-
-    private revealFile(filePath: string, viewColumn: vscode.ViewColumn, line: number, character: number) {
-        const location = new vscode.Position(line, character);
-        const showOpts: vscode.TextDocumentShowOptions = {
-            selection: new vscode.Range(location, location),
-            viewColumn: viewColumn
-        };
-        vscode.workspace.openTextDocument(filePath)
-            .then(doc => vscode.window.showTextDocument(doc, showOpts));
-    }
-
-    private async createDocument(text: string) {
-        const doc = await vscode.workspace.openTextDocument();
-        const editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.One);
-        const zero = new vscode.Position(0, 0);
-        await editor.edit((edit) => edit.insert(zero, text));
-        editor.selection = new vscode.Selection(zero, zero);
-        editor.revealRange(new vscode.Range(zero, zero), vscode.TextEditorRevealType.AtTop);
     }
 
     private getWebviewContent() {
