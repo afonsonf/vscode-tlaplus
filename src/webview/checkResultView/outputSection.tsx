@@ -56,7 +56,7 @@ export const OutputSection = ({checkResult}: {checkResult: ModelCheckResult}) =>
 
     return (
         <section>
-            <VSCodePanels id='output-panels'>
+            <VSCodePanels id="output-panels">
                 <OutputLines/>
                 <Warnings/>
                 <Errors/>

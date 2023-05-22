@@ -198,23 +198,23 @@ const ErrorTraceElementVariable = ({value, stateId, settings}: ErrorTraceElement
         };
 
         return (
-            <div className='var-block'>
+            <div className="var-block">
                 <div className={classes} onClick={setState}>
                     {variableTitleKey}
                     {variableTitleItemSize}
                     {variableTitleChangeType}
                 </div>
-                <div className='var-value'>{value.str}</div>
-                <div className='var-menu'>
+                <div className="var-value">{value.str}</div>
+                <div className="var-menu">
                     <span
                         hidden={value.changeType !== 'D'}
-                        title='Dislpay value'
+                        title="Dislpay value"
                         onClick={displayValue}
-                        className='var-button codicon codicon-link-external'/>
+                        className="var-button codicon codicon-link-external"/>
                     <span
-                        title='Copy value to clipboard'
+                        title="Copy value to clipboard"
                         onClick={copyToClipboard}
-                        className='var-button codicon codicon-copy'/>
+                        className="var-button codicon codicon-copy"/>
                 </div>
             </div>
         );

@@ -33,8 +33,8 @@ export const HeaderSection = ({checkResult}: {checkResult: ModelCheckResult}) =>
             <span hidden={checkResult.state !== 'R'}>
                     (<VSCodeLink onClick={vscode.stopProcess} href="#">stop</VSCodeLink>)
             </span>
-            <span hidden={(checkResult.statusDetails !== null)}>:
-                {checkResult.statusDetails}
+            <span hidden={checkResult.statusDetails === null}>:
+                {' ' + checkResult.statusDetails}
             </span>
         </div>
     );
