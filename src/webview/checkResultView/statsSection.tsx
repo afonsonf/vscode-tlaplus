@@ -48,7 +48,8 @@ const StatesStats = ({stats}: {stats: InitialStateStatItem[]}) => {
                 value: 'Queue', isNumber: true,
                 tooltip: 'The number of states whose successor states have not been found yet'
             }].map(
-                (v, id) => <DataGridCellHeader id={id+1} value={v.value} isNumber={v.isNumber} tooltip={v.tooltip}/>)}
+                (v, id) =>
+                    <DataGridCellHeader key={id} id={id+1} value={v.value} isNumber={v.isNumber} tooltip={v.tooltip}/>)}
         </VSCodeDataGridRow>
     );
 
@@ -98,7 +99,8 @@ const CoverageStats = ({stats}: {stats: CoverageItem[]}) => {
                 value: 'Distinct', isNumber: true,
                 tooltip: 'Total number of times the action produced a distinct successor state'
             }].map(
-                (v, id) => <DataGridCellHeader id={id+1} value={v.value} isNumber={v.isNumber} tooltip={v.tooltip}/>)}
+                (v, id) =>
+                    <DataGridCellHeader key={id} id={id+1} value={v.value} isNumber={v.isNumber} tooltip={v.tooltip}/>)}
         </VSCodeDataGridRow>
     );
 
