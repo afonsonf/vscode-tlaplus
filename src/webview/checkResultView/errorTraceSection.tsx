@@ -7,6 +7,7 @@ import {
 } from '@vscode/webview-ui-toolkit/react';
 import * as React from 'react';
 import { CollectionValue, ErrorInfo, ErrorTraceItem, ModelCheckResult } from '../../model/check';
+import { VSCodeTreeItem, VSCodeTreeView } from '../tree';
 import { CodeRangeLink } from './common';
 import { vscode } from './vscode';
 
@@ -79,33 +80,20 @@ const ErrorTrace = ({errorinfo, traceId}: {errorinfo: ErrorInfo, traceId: number
                         {settings.hideModified? 'Show': 'Hide'} unmodified
                     </VSCodeLink>
                 </div>
-                <ul style={{listStyleType: 'none', paddingInlineStart: '1em'}}>
+                <VSCodeTreeView>
                     {errorTraceElements}
-                </ul>
+                </VSCodeTreeView>
             </VSCodePanelView>
         </>
     );
 };
 
-enum TreeNodeState { EXPANDED, COLLAPSED }
-
-function switchState(state: TreeNodeState): TreeNodeState {
-    return state === TreeNodeState.EXPANDED? TreeNodeState.COLLAPSED : TreeNodeState.EXPANDED;
-}
-
 const ErrorTraceElement = ({errorTraceItem, settings}: {errorTraceItem: ErrorTraceItem, settings: Settings}) => {
 
-    const [treeNodeState, setTreeNodeState] = React.useState(TreeNodeState.EXPANDED);
-    const setState = () => {
-        setTreeNodeState(switchState(treeNodeState));
-    };
-
     const ErrorTraceElementHeader = () => {
-        const treeClass = treeNodeState === TreeNodeState.EXPANDED? 'tree-expandable-down' : '';
-        const classes = 'tree-node tree-expandable error-trace-item-title ' + treeClass;
         return (
             <div style={{marginTop: '0.5em'}}>
-                <span className={classes} onClick={setState}>
+                <span className="error-trace-item-title">
                     {errorTraceItem.num}: {errorTraceItem.title}
                 </span>
                 <CodeRangeLink line='>>' filepath={errorTraceItem.filePath} range={errorTraceItem.range} />
@@ -113,23 +101,21 @@ const ErrorTraceElement = ({errorTraceItem, settings}: {errorTraceItem: ErrorTra
         );
     };
 
-    const errorTraceVariables = (treeNodeState === TreeNodeState.COLLAPSED) ? (null) :
+    const errorTraceVariables =
         errorTraceItem.variables.items
             .map(
                 (value) =>
-                    <ErrorTraceElementVariable
+                    <ErrorTraceElementVariableMemo
                         key={value.id}
                         value={value as CollectionValue}
                         stateId={errorTraceItem.num}
                         settings={settings}/>);
 
     return (
-        <li>
+        <VSCodeTreeItem>
             <ErrorTraceElementHeader/>
-            <ul style={{listStyleType: 'none', paddingInlineStart: '1em'}}>
-                {errorTraceVariables}
-            </ul>
-        </li>
+            {errorTraceVariables}
+        </VSCodeTreeItem>
     );
 };
 
@@ -167,13 +153,6 @@ const ErrorTraceElementVariable = ({value, stateId, settings}: ErrorTraceElement
         return (null);
     }
 
-    const hasChildren = hasVariableChildrenToDisplay(value);
-
-    const [treeNodeState, setTreeNodeState] = React.useState(TreeNodeState.COLLAPSED);
-    const setState = () => {
-        setTreeNodeState(switchState(treeNodeState));
-    };
-
     const ErrorTraceElementVariableTitle = () => {
         const variableTitleKeyClass = value.changeType === 'D'? 'value-deleted': '';
         const variableTitleKey = <span className={variableTitleKeyClass}>{value.key}</span>;
@@ -185,12 +164,6 @@ const ErrorTraceElementVariable = ({value, stateId, settings}: ErrorTraceElement
         const variableTitleChangeType = value.changeType === 'N' ? (null) :
             <span title={changeHints[value.changeType]} className={changeTypeClass}>{value.changeType}</span>;
 
-        let classes = 'var-name tree-node';
-        if (hasChildren) {
-            const treeClass = treeNodeState === TreeNodeState.EXPANDED? 'tree-expandable-down' : '';
-            classes += ' tree-expandable ' + treeClass;
-        }
-
         const displayValue = () => vscode.showVariableValue(value.id);
         const copyToClipboard = () => {
             navigator.clipboard.writeText(value.str);
@@ -199,7 +172,7 @@ const ErrorTraceElementVariable = ({value, stateId, settings}: ErrorTraceElement
 
         return (
             <div className="var-block">
-                <div className={classes} onClick={setState}>
+                <div className="var-name">
                     {variableTitleKey}
                     {variableTitleItemSize}
                     {variableTitleChangeType}
@@ -220,28 +193,20 @@ const ErrorTraceElementVariable = ({value, stateId, settings}: ErrorTraceElement
         );
     };
 
-    const ErrorTraceElementVariableTitleChildren = () => {
-        if (!hasVariableChildrenToDisplay(value) || treeNodeState===TreeNodeState.COLLAPSED) {
-            return (null);
-        }
-
-        return (
-            <ul className="tree-nodes">
-                {(value as CollectionValue).items.map(
+    return (
+        <React.Suspense fallback={<div>🌀 Loading...</div>}>
+            <VSCodeTreeItem>
+                <ErrorTraceElementVariableTitle/>
+                {hasVariableChildrenToDisplay(value) &&
+                (value as CollectionValue).items.map(
                     (value) =>
-                        <ErrorTraceElementVariable
+                        <ErrorTraceElementVariableMemo
                             key={value.id}
                             value={value as CollectionValue}
                             stateId={stateId}
                             settings={settings}/>)}
-            </ul>
-        );
-    };
-
-    return (
-        <li>
-            <ErrorTraceElementVariableTitle/>
-            <ErrorTraceElementVariableTitleChildren/>
-        </li>
+            </VSCodeTreeItem>
+        </React.Suspense>
     );
 };
+const ErrorTraceElementVariableMemo = React.memo(ErrorTraceElementVariable);

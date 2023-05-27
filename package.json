@@ -421,6 +421,9 @@
         "vscode-tmgrammar-test": "^0.1.1"
     },
     "dependencies": {
+        "@fluentui/web-components": "^2.5.14",
+        "@microsoft/fast-components": "^2.30.6",
+        "@microsoft/fast-react-wrapper": "^0.3.18",
         "@vscode/codicons": "^0.0.33",
         "@vscode/debugadapter": "^1.59.0",
         "@vscode/webview-ui-toolkit": "^1.2.2",
