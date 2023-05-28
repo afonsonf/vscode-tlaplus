@@ -37,13 +37,12 @@
 
 .var-block {
     line-height: 1.4em;
-    position: relative;
-    display: flex;
+    display: grid;
+    grid-template-columns: 30% 70%;
 }
 
 .var-name {
     display: inline-block;
-    width: 30%;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -57,7 +56,6 @@
 
 .var-value {
     display: inline-block;
-    width: 70%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
