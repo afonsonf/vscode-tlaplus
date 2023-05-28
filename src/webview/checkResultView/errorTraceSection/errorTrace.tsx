@@ -81,7 +81,7 @@ const useSettings = (numberOfStates: number) => {
 
     const [hideModified, _setHideModified] = React.useState(false);
     const [filter, _setFilter] = React.useState(parseFilter(''));
-    const [expandStates, _setExpandStates] = React.useState(new Array(numberOfStates).fill(false));
+    const [expandStates, _setExpandStates] = React.useState(new Array(numberOfStates).fill(true));
 
     const setFilter = (newFilter: string) => {
         _setFilter(parseFilter(newFilter));

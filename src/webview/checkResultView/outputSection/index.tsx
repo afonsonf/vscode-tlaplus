@@ -79,8 +79,10 @@ const ErrorLink = React.memo(({error, index}: ErrorLinkI) => {
         return (null);
     }
 
-    const panels = document.getElementById('error-trace-panels') as Panels;
-    const switchTab = () => panels.activeid = 'error-trace-tab-' + index;
+    const switchTab = () => {
+        const panels = document.getElementById('error-trace-panels') as Panels;
+        panels.activeid = 'error-trace-tab-' + index;
+    };
     return (
         <VSCodeLink onClick={switchTab} href="#error-trace-panels"> Show error trace </VSCodeLink>
     );

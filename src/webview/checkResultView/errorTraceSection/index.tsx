@@ -13,7 +13,7 @@ export const ErrorTraceSection = React.memo(({checkResult}: ErrorTraceSectionI) 
 
     return (
         <section>
-            <VSCodePanels id='error-trace-panels'>
+            <VSCodePanels id="error-trace-panels">
                 {checkResult.errors.map((error, index) => <ErrorTrace key={index} errorinfo={error} traceId={index}/>)}
             </VSCodePanels>
         </section>
