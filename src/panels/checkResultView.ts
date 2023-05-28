@@ -34,7 +34,7 @@ class CheckResultViewPanel {
         this.panel = vscode.window.createWebviewPanel(
             CheckResultViewPanel.viewType,
             'TLA+ model checking',
-            vscode.ViewColumn.Beside,
+            vscode.ViewColumn.Two,
             {
                 enableScripts: true,
                 localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'out')]

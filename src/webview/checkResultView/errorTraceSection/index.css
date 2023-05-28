@@ -1,56 +1,36 @@
-.text-align-right {
-    text-align: right;
-}
-
-.hidden-overflow-ellipsis {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-
 .cursor-pointer {
     cursor: pointer;
 }
 
-.state-R {
-    color: var(--vscode-editor-foreground);
+.option-button {
+    margin-left: 0.5em;
+    width: 20px;
+    height: 20px;
 }
 
-.vscode-light .state-X {
-    color: #c60;
+.option-button:hover {
+    background-color: var(--vscode-list-hoverBackground);
 }
 
-.vscode-dark .state-X {
-    color: #f93;
+.flex-direction-column {
+    flex-direction: column;
 }
 
-.vscode-high-contrast .state-X {
-    color: #fa6;
+.error-trace-options {
+    display: flex;
+    align-items: center;
 }
 
-.vscode-light .state-S {
-    color: #393;
+.margin-left-auto {
+    margin-left: auto;
 }
 
-.vscode-dark .state-S {
-    color: #6c6;
+.error-trace-title {
+    margin-top: 0.5em;
 }
 
-.vscode-high-contrast .state-S {
-    color: #3f3;
-}
-
-.state-E {
-    color: var(--vscode-errorForeground);
-}
-
-.coverage-zero {
-    background: var(--vscode-inputValidation-warningBackground);
-}
-
-.error-trace-item-title {
+.error-trace-title span{
     font-weight: bold;
-    background-color: var(--vscode-editor-lineHighlightBackground);
     padding-bottom: 0.1em;
     margin-bottom: 0.1em;
 }
@@ -120,30 +100,4 @@
 .value-deleted {
     opacity: 0.6;
     text-decoration: line-through;
-}
-
-.tree-nodes {
-    list-style-type: none;
-    padding-inline-start: 1em;
-}
-
-.tree-node::before {
-    content: '';
-    font-size: smaller;
-    display: inline-block;
-    width: 1.3em;
-}
-
-.tree-expandable {
-    cursor: pointer;
-    user-select: none;
-}
-
-.tree-expandable::before {
-    content: "\25B6";
-    opacity: 0.5;
-}
-
-.tree-expandable-down::before {
-    transform: translate(-0.2em, 0.2em) rotate(90deg);
 }
